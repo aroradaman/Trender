@@ -10,6 +10,5 @@ Change :
 3. change the content of 'dir.txt' to the root where the files are extracted
 
 4. Delete 'Data.db' , 'data/' and 'tracer/' directory from root
-	They will be generated after running service.py
 
 5. Run service.py
