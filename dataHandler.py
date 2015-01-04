@@ -19,8 +19,7 @@ except :
 try :
     os.mkdir('tracer')
 except :
-    pass    
-shared = ['/home']
+    pass
 
 def md5(string) :
     hasher = hashlib.md5()
@@ -120,7 +119,7 @@ def idIndexer(dataSet) :
         con.commit()
         con.close()
 
-def idGenerator(path,title) :           
+def idGenerator(path,title) :
     string = title.strip() + str( MP3(path).info.length )
     return md5(string)
         
@@ -129,6 +128,8 @@ def handleData(pathList) :
     con.text_factory = str
     cur = con.cursor()
     for path in pathList :
+        time.sleep(0.25)
+        print path
         tags = getTags(path)
         ##print path
         #for item in tags :
@@ -145,6 +146,7 @@ def handleData(pathList) :
             sql = 'INSERT INTO Data VALUES (?,?,?,?,?,?,?,?,?)'
             cur.execute(sql,(Id,uni(tags[0]),uni(tags[1]),uni(tags[2]),uni(tags[3]),uni(tags[4]),path,0,getPathTime(path)))
             con.commit()
+            print tags[0]
             dataIndexer(Id,uni(tags[0]))
             idIndexer([Id,uni(tags[0]),uni(tags[1]),uni(tags[2]),uni(tags[3]),uni(tags[4]),path,0,getPathTime(path)],)
     con.close()
@@ -177,6 +179,7 @@ def updateData() :
     var = list('0123456789ABCDEF')
     for inner in var :
         for outer in var :
+            time.sleep(0.1)
             try :
                 con=sqlite3.connect(os.path.join(os.path.join(os.path.join(os.getcwd(),'tracer'),md5(outer)),md5(inner))+'/Data.db')
             except sqlite3.OperationalError :
