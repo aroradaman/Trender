@@ -1,0 +1,96 @@
+<html>
+<head>
+  
+</head>
+<body>
+  <div id="chartContainer" style="height:90%; width: 100%;" ></div>
+
+  <input id="inputQuery" type="text" autofocus/>
+  <button onclick="submitSong()">SUBMIT</button>
+  <button onclick="clearSong()">CLEAR</button>
+  <script type="text/javascript" src="js/vendor/canvasjs.min.js"></script>
+  <script type="text/javascript" src="js/vendor/jquery.min.js"></script>
+
+  <script type="text/javascript">
+
+    var chart;
+
+    var ddataName, ddata = [], masterddata = [];
+    $.ajax({
+      method: 'GET',
+      url: 'http://127.0.0.1:5000/getSongViz?type=line&query=link',
+      success: function(data) {               
+        data = JSON.parse(data);
+
+        for(var i = 0 ; i < data.y.length ; i++) {
+          //ddata.push( { x: new Date(2015, 1, 1, data.x[i]), y: data.y[i] } );
+          ddata.push( { x: data.x[i], y: data.y[i] } );
+        }
+
+        masterddata.push({
+          type: "line",
+          name: data.on,
+          showInLegend: true,
+          lineThickness: 3,        
+          dataPoints: ddata
+        });
+        masterddata = [];
+
+        chart = new CanvasJS.Chart("chartContainer", {
+          theme: "theme2",
+          title:{
+            text: "Songs"
+          },
+          animationEnabled: true,
+          axisX: {
+            gridColor: "Silver",
+            tickColor: "silver",
+          },
+          axisY:{
+            gridColor: "Silver",
+            tickColor: "silver"
+          },
+          data: masterddata
+          });
+
+        chart.render();
+      }
+    });
+
+    function submitSong() {
+      var val = $('#inputQuery').val();
+      console.log(val);
+      $.ajax({
+        method: 'GET',
+        url: 'http://127.0.0.1:5000/getSongViz?type=line&query=' + encodeURI(val),
+        success: function(data) {               
+          data = JSON.parse(data);
+          var dadada = [];
+          for(var i = 0 ; i < data.y.length ; i++) {
+            dadada.push( { x: data.x[i], y: data.y[i] } );
+          }
+
+          masterddata.push({
+            type: "line",
+            name: data.on,
+            showInLegend: true,
+            lineThickness: 3,        
+            dataPoints: dadada
+          });
+
+          chart.render();
+
+        $('#inputQuery').val('')
+        }    
+      });
+    };
+
+    window.onkeypress = function(e) {
+      if(e.charCode == 13) {
+        submitSong();
+      }
+    }
+
+  </script>
+</body>
+</html>
