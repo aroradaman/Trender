@@ -1,0 +1,102 @@
+<html>
+<head>
+<script src="jquery.min.js">
+</script>
+<script>
+
+	function ping(host, port, pong) {
+		var started = new Date().getTime();
+		var http = new XMLHttpRequest();
+		http.open("GET", "http://" + host + ":" + port, /*async*/true);
+		http.onreadystatechange = function() {
+			if (http.readyState == 4) {
+				var ended = new Date().getTime();
+				var milliseconds = ended - started;
+			if (pong != null) {
+				pong(milliseconds);
+				}
+			}
+		};
+		try {
+			http.send(null);
+		} catch(exception) {
+			alert('exception');
+		}
+	}
+
+	function playMP3(id,List) {		
+		var list = List.toString().split(",");
+		//for(var i =0;i<list.length;i++){
+		//	ping(list[i],5000,function(x) {return x;});
+		//}
+		var n = Math.floor(Math.random()*list.length);
+		var ip = list[n];
+		alert(ip);
+		var fetchUrl = '/playId?id='+id;
+			$.ajax({url: fetchUrl ,success:function(result){
+				$('#playBox').empty();	
+			$('#playBox').append(result);
+				results();
+			}
+		});
+		window.location = "http://" + ip + ":5000/player?id=" + id;
+	}
+
+	function safe(getVar) {
+		return(encodeURIComponent(getVar));
+	}
+	$(document).ready(function(){
+		
+		$("input").keyup(function(){		
+			results();	
+		});
+		
+});
+
+	function results() {
+
+		var fetchUrl = "fetchRPC?title=" + safe(document.getElementById('title').value) + '&artist=' + safe(document.getElementById('artist').value) + '&album='+ safe(document.getElementById('album').value) + '&genre='+ safe(document.getElementById('genre').value) + '&year=' + safe(document.getElementById('year').value);
+		
+			$.ajax({url: fetchUrl ,success:function(result){
+
+				$('#result').empty();
+	
+			$('#result').append(result);
+
+				}
+			});
+	
+	}
+
+
+	$( document ).on( 'click', '#playButton', function () {
+		playMP3($(this).data('value'),$(this).data('location'));	    
+	} );
+
+</script>
+
+</head>
+
+<body>
+<input type='text' name='title' id='title'>
+
+<input type='text' name='artist' id ='artist'>
+
+<input type='text' name='album' id ='album'>
+
+<input type='text' name='genre' id ='genre'>
+
+<input type='year' name='year' id ='year'>
+
+<div id="playBox" name ="playBox">
+</div>
+<br>
+
+<div id='result' name='result'>
+ . . . . . . . . . . . . . <br>
+
+</div>
+
+</body>
+
+</html>
